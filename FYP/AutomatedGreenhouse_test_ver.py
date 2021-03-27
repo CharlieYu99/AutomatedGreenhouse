@@ -30,13 +30,13 @@ GPIO.setmode(GPIO.BCM)
 # 100, 103, 104, 105, 108 Reco
 
 # device_setting
-Humidifier_setting = ("192.168.0.101", "Edimax")
+Humidifier_setting = ("192.168.0.103", "Edimax")
 Heater_setting = ("192.168.0.102", "Edimax")
-Fan0_setting = ("192.168.0.104", "Reco4life")
-Fan1_setting = ("192.168.0.108", "Reco4life")
-Pump_setting = ("192.168.0.105", "Reco4life")
-Light0_setting = ("192.168.0.103", "Reco4life")
-Light1_setting = ("192.168.0.100","Reco4life")
+Fan0_setting = ("192.168.0.106", "Reco4life")
+Fan1_setting = ("192.168.0.105", "Reco4life")
+Pump_setting = ("192.168.0.107", "Reco4life")
+Light0_setting = ("192.168.0.104", "Reco4life")
+Light1_setting = ("192.168.0.108","Reco4life")
 DHT22_pin = 18
 
 # # value limits

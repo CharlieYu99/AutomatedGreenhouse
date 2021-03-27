@@ -5,13 +5,13 @@ import Reco4lifeP10A as Reco
 import time
 
 # device_setting
-Humidifier_setting = ("192.168.0.101", "Edimax")
+Humidifier_setting = ("192.168.0.103", "Edimax")
 Heater_setting = ("192.168.0.102", "Edimax")
-Fan0_setting = ("192.168.0.104", "Reco4life")
-Fan1_setting = ("192.168.0.115", "Reco4life")
-Pump_setting = ("192.168.0.105", "Reco4life")
-Light0_setting = ("192.168.0.103", "Reco4life")
-Light1_setting = ("192.168.0.100","Reco4life")
+Fan0_setting = ("192.168.0.106", "Reco4life")
+Fan1_setting = ("192.168.0.105", "Reco4life")
+Pump_setting = ("192.168.0.107", "Reco4life")
+Light0_setting = ("192.168.0.104", "Reco4life")
+Light1_setting = ("192.168.0.108","Reco4life")
 
 #private class for smart plugs control (combine into one object)
 class Device:
@@ -35,20 +35,21 @@ class Device:
 # Device inits
 Humidifier = Device(Humidifier_setting[0], Humidifier_setting[1])
 Heater = Device(Heater_setting[0], Heater_setting[1])
-# Fan0 = Device(Fan0_setting[0], Fan0_setting[1])
-# Fan1 = Device(Fan1_setting[0], Fan1_setting[1])
-# Pump = Device(Pump_setting[0], Pump_setting[1])
-# Light0 = Device(Light0_setting[0], Light0_setting[1])
-# Light1 = Device(Light1_setting[0], Light1_setting[1])
+Fan0 = Device(Fan0_setting[0], Fan0_setting[1])
+Fan1 = Device(Fan1_setting[0], Fan1_setting[1])
+Pump = Device(Pump_setting[0], Pump_setting[1])
+Light0 = Device(Light0_setting[0], Light0_setting[1])
+Light1 = Device(Light1_setting[0], Light1_setting[1])
 
-on_time = 5
+on_time = 3
 
-Humidifier.on()
-Heater.on()
 time.sleep(on_time)
-Heater.off()
-Humidifier.off()
-time.sleep(3)
+# Humidifier.on()
+# Heater.on()
+# time.sleep(on_time)
+# Heater.off()
+# Humidifier.off()
+# time.sleep(3)
 
 # Fan0.on()
 # time.sleep(on_time)
@@ -60,20 +61,20 @@ time.sleep(3)
 # Fan1.off()
 # time.sleep(3)
 
-# Pump.on()
-# time.sleep(on_time)
-# Pump.off()
-# time.sleep(3)
+Pump.on()
+time.sleep(on_time)
+Pump.off()
+time.sleep(3)
 
 # Light0.on()
 # time.sleep(on_time)
 # Light0.off()
 # time.sleep(3)
 
-# Light1.on()
-# time.sleep(on_time)
-# Light1.off()
-# time.sleep(3)
+Light1.on()
+time.sleep(on_time)
+Light1.off()
+time.sleep(3)
 
 
 

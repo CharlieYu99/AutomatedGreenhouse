@@ -26,8 +26,8 @@ from sunrise_sunset import SunriseSunset
 # GPIO setting
 GPIO.setmode(GPIO.BCM)
 
-# 101,102 Edimax
-# 100, 103, 104, 105, 108 Reco
+# 102,103 Edimax
+# 104,105,106,107,108 Reco
 
 # device_setting
 Humidifier_setting = ("192.168.0.103", "Edimax")
@@ -51,7 +51,7 @@ moisture_limit_low = 10000000
 watering_warranty = -1
 
 # collection period
-collection_frequency = 60*60
+collection_frequency = 60*1
 
 # program setting
 print_val = True
@@ -228,39 +228,43 @@ def device_control(ADC_Value,temperature22,humidity22):
         Light0.off()
         light_state = False
 
-    # Temperature
-    if temperature22 < temperature_limit_low and temperature22 != 0:
-        # if the temperature is low, turn on the heater and the fan to warm the greenhouse
-        fan0_state = True
-        fan1_state = True
-        heater_state = True
+    heater_state = True
+    Fan1.on()
+    device_control_single(Heater,collection_frequency,30,30)
 
-        Fan0.on()
-        Fan1.on()
-        device_control_single(Heater,collection_frequency,60,120)
+    # # Temperature
+    # if temperature22 < temperature_limit_low and temperature22 != 0:
+    #     # if the temperature is low, turn on the heater and the fan to warm the greenhouse
+    #     fan0_state = True
+    #     fan1_state = True
+    #     heater_state = True
 
-    elif temperature22 > temperature_limit_high and temperature22 != 0:
-        # if the temperature is high, turn on the fan to circulate the air to cool the greenhouse down. at the same time, turn on the humidifier to accelerate the cooling 
-        fan0_state = True
-        fan1_state = True
-        humidifier_state = True
+    #     Fan0.on()
+    #     Fan1.on()
+    #     device_control_single(Heater,collection_frequency,60,120)
 
-        Fan0.on()
-        Fan1.on()
-        device_control_single(Humidifier,collection_frequency,30,90)
+    # elif temperature22 > temperature_limit_high and temperature22 != 0:
+    #     # if the temperature is high, turn on the fan to circulate the air to cool the greenhouse down. at the same time, turn on the humidifier to accelerate the cooling 
+    #     fan0_state = True
+    #     fan1_state = True
+    #     humidifier_state = True
 
-    else:
-        Fan0.off()
-        Fan1.on()
-        fan0_state = False
-        fan1_state = True
-        humidifier_state = False
-        heater_state = False
+    #     Fan0.on()
+    #     Fan1.on()
+    #     device_control_single(Humidifier,collection_frequency,30,90)
 
-    # humidity
-    if humidity22 < 65 and humidity22 != 0 and not humidifier_state:
-        humidifier_state = True
-        device_control_single(Humidifier,collection_frequency,15,105)
+    # else:
+    #     Fan0.off()
+    #     Fan1.on()
+    #     fan0_state = False
+    #     fan1_state = True
+    #     humidifier_state = False
+    #     heater_state = False
+
+    # # humidity
+    # if humidity22 < 65 and humidity22 != 0 and not humidifier_state:
+    #     humidifier_state = True
+    #     device_control_single(Humidifier,collection_frequency,15,105)
 
     # moisture
     # if ((moisture_0 + moisture_1 + moisture_2 + moisture_3) / 4) > 150:
