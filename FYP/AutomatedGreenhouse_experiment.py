@@ -37,7 +37,8 @@ Fan1_setting = ("192.168.0.105", "Reco4life")
 Pump_setting = ("192.168.0.107", "Reco4life")
 Light0_setting = ("192.168.0.104", "Reco4life")
 Light1_setting = ("192.168.0.108","Reco4life")
-DHT22_pin = 18
+DHT22_pin_in = 18
+DHT22_pin_out = 4
 
 # # value limits
 light_limit_low = 10000000
@@ -51,7 +52,7 @@ moisture_limit_low = 10000000
 watering_warranty = -1
 
 # collection period
-collection_frequency = 60*1
+collection_frequency = 60*30
 
 # program setting
 print_val = True
@@ -137,27 +138,40 @@ def data_collection_and_storage():
 
         # DHT22
         DHT22 = Adafruit_DHT.DHT22
-
-        humidity22, temperature22 = Adafruit_DHT.read_retry(DHT22, DHT22_pin)
-
+        humidity22_in, temperature22_in = Adafruit_DHT.read_retry(DHT22, DHT22_pin_in)
+        
         try:
-            humidity22 = int(humidity22)
-            temperature22 = int(temperature22)
+            humidity22_in = int(humidity22_in)
+            temperature22_in = int(temperature22_in)
         except:
             print ("DHT22 read failure")
-            humidity22 = 0
-            temperature22 = 0
+            humidity22_in = 0
+            temperature22_in = 0
+        
+        time.sleep(2)
+
+        humidity22_out, temperature22_out = Adafruit_DHT.read_retry(DHT22, DHT22_pin_out)
+        try:
+            humidity22_out = int(humidity22_out)
+            temperature22_out = int(temperature22_out)
+        except:
+            print ("DHT22 read failure")
+            humidity22_out = 0
+            temperature22_out = 0
 
         if print_val:
             print ("light_0: %i, light_1: %i"%(ADC_Value[0]*5.0,ADC_Value[1]*5.0))
             print ("CO2_0: %i, CO2_1: %i"%(ADC_Value[2]*5.0,ADC_Value[3]*5.0))
             print ("moisture_0: %i, moisture_1: %i, moisture_2: %i, moisture_3: %i"%(ADC_Value[4]*5.0,ADC_Value[5]*5.0,ADC_Value[6]*5.0,ADC_Value[7]*5.0))
-            if (humidity22 == 0 and temperature22 == 0):
-                print("DHT22 failure")
+            if (humidity22_in == 0 and temperature22_in == 0):
+                print("DHT22 inside failure")
             else:
-                print("DHT22: humidity = %i, temperature = %i" % (humidity22, temperature22))
-
-        device_control(ADC_Value,temperature22,humidity22)
+                print("DHT22 inside: humidity = %i, temperature = %i" % (humidity22_in, temperature22_in))
+            if (humidity22_out == 0 and temperature22_out == 0):
+                print("DHT22 outside failure")
+            else:
+                print("DHT22 ouside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
+        device_control(ADC_Value,humidity22_in,temperature22_in,humidity22_out,temperature22_out)
 
         # database storage
         conn=pymysql.connect(host='localhost',
@@ -167,22 +181,24 @@ def data_collection_and_storage():
                              db='GreenhouseDB',
                              charset='utf8')
         cur=conn.cursor()
-        sql = """INSERT INTO test ( time,
+        sql = """INSERT INTO experiment_data ( time,
                                     sensor_light_0,sensor_light_1,
                                     sensor_CO2_0,sensor_CO2_1,
                                     sensor_moisture_0,sensor_moisture_1,sensor_moisture_2,sensor_moisture_3,
-                                    sensor_temperature,sensor_humidity,
+                                    sensor_temperature_inside,sensor_humidity_inside,
+                                    sensor_temperature_outside,sensor_humidity_outside,
                                     device_light,
                                     device_waterpump,
                                     device_fan_0,device_fan_1,
                                     device_humidifier,
                                     device_heater) 
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         val = ( datetime.datetime.now(),
                 light_0, light_1, 
                 CO2_0, CO2_1, 
                 moisture_0, moisture_1, moisture_2, moisture_3, 
-                temperature22, humidity22, 
+                temperature22_in, humidity22_in,
+                temperature22_out, humidity22_out,
                 light_state, 
                 waterpump_state, 
                 fan0_state, fan1_state, 
@@ -196,7 +212,7 @@ def data_collection_and_storage():
         
 
 
-def device_control(ADC_Value,temperature22,humidity22):
+def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,humidity22_out):
     global light_state, waterpump_state, humidifier_state, heater_state, fan0_state, fan1_state
 
     light_0 = int(ADC_Value[0]*5.0)
@@ -207,7 +223,6 @@ def device_control(ADC_Value,temperature22,humidity22):
     moisture_1 = int(ADC_Value[5]*5.0)
     moisture_2 = int(ADC_Value[6]*5.0)
     moisture_3 = int(ADC_Value[7]*5.0)
-
 
     # Light
     # calculate the time for sunrise and sunset
@@ -228,9 +243,11 @@ def device_control(ADC_Value,temperature22,humidity22):
         Light0.off()
         light_state = False
 
+
+    fan1_state = True
     heater_state = True
     Fan1.on()
-    device_control_single(Heater,collection_frequency,30,30)
+    device_control_single(Heater,collection_frequency,30,150)
 
     # # Temperature
     # if temperature22 < temperature_limit_low and temperature22 != 0:

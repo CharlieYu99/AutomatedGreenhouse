@@ -44,9 +44,12 @@ light_limit_low = 10000000
 light_limit_high = 1000000
 temperature_limit_low = 22
 temperature_limit_high = 28
-humidity_limit_low = 65
-humidity_limit_high = 99
+humidity_limit_low = 50
+humidity_limit_high = 80
 moisture_limit_low = 10000000
+temperature_target = 25
+humidity_target = 65
+
 
 watering_warranty = -1
 

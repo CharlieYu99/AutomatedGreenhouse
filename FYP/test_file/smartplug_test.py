@@ -43,7 +43,7 @@ Light1 = Device(Light1_setting[0], Light1_setting[1])
 
 on_time = 3
 
-time.sleep(on_time)
+# time.sleep(on_time)
 # Humidifier.on()
 # Heater.on()
 # time.sleep(on_time)
@@ -51,30 +51,30 @@ time.sleep(on_time)
 # Humidifier.off()
 # time.sleep(3)
 
-# Fan0.on()
+Fan0.on()
 # time.sleep(on_time)
 # Fan0.off()
 # time.sleep(3)
 
-# Fan1.on()
+Fan1.on()
 # time.sleep(on_time)
 # Fan1.off()
 # time.sleep(3)
 
-Pump.on()
-time.sleep(on_time)
-Pump.off()
-time.sleep(3)
+# Pump.on()
+# time.sleep(on_time)
+# Pump.off()
+# time.sleep(3)
 
 # Light0.on()
 # time.sleep(on_time)
 # Light0.off()
 # time.sleep(3)
 
-Light1.on()
-time.sleep(on_time)
-Light1.off()
-time.sleep(3)
+# Light1.on()
+# time.sleep(on_time)
+# Light1.off()
+# time.sleep(3)
 
 
 
