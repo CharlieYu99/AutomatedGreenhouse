@@ -146,7 +146,7 @@ def data_collection_and_storage():
             humidity22_in = int(humidity22_in)
             temperature22_in = int(temperature22_in)
         except:
-            print ("DHT22 read failure")
+            # print ("DHT22 read failure")
             humidity22_in = 0
             temperature22_in = 0
         
@@ -157,9 +157,14 @@ def data_collection_and_storage():
             humidity22_out = int(humidity22_out)
             temperature22_out = int(temperature22_out)
         except:
-            print ("DHT22 read failure")
+            # print ("DHT22 read failure")
             humidity22_out = 0
             temperature22_out = 0
+
+        humidity22_in = humidity22_in if humidity22_in <= 100 else 0
+        temperature22_in = humidity22_in if humidity22_in <= 100 else 0
+        humidity22_out = humidity22_in if humidity22_out <= 100 else 0
+        temperature22_out = humidity22_in if humidity22_out <= 100 else 0
 
         if print_val:
             print ("light_0: %i, light_1: %i"%(ADC_Value[0],ADC_Value[1]))
