@@ -74,6 +74,8 @@ class Device:
         elif self._type == "Reco4life":
             Reco.on(self._IP)
 
+
+
     def off(self):
         if self._type == "Edimax":
             SmartPlug(self._IP, ('admin', 'password')).state = 'OFF'
@@ -123,14 +125,14 @@ def data_collection_and_storage():
         # AD-DA module
         try:
             ADC_Value = ADC.ADS1256_GetAll()
-            light_0 = int(ADC_Value[0]*5.0)
-            light_1 = int(ADC_Value[1]*5.0)
-            CO2_0 = int(ADC_Value[2]*5.0)
-            CO2_1 = int(ADC_Value[3]*5.0)
-            moisture_0 = int(ADC_Value[4]*5.0)
-            moisture_1 = int(ADC_Value[5]*5.0)
-            moisture_2 = int(ADC_Value[6]*5.0)
-            moisture_3 = int(ADC_Value[7]*5.0)
+            light_0 = int(ADC_Value[0])
+            light_1 = int(ADC_Value[1])
+            CO2_0 = int(ADC_Value[2])
+            CO2_1 = int(ADC_Value[3])
+            moisture_0 = int(ADC_Value[4])
+            moisture_1 = int(ADC_Value[5])
+            moisture_2 = int(ADC_Value[6])
+            moisture_3 = int(ADC_Value[7])
         except :
             GPIO.cleanup()
             print ("AD module interrupted")
@@ -160,9 +162,9 @@ def data_collection_and_storage():
             temperature22_out = 0
 
         if print_val:
-            print ("light_0: %i, light_1: %i"%(ADC_Value[0]*5.0,ADC_Value[1]*5.0))
-            print ("CO2_0: %i, CO2_1: %i"%(ADC_Value[2]*5.0,ADC_Value[3]*5.0))
-            print ("moisture_0: %i, moisture_1: %i, moisture_2: %i, moisture_3: %i"%(ADC_Value[4]*5.0,ADC_Value[5]*5.0,ADC_Value[6]*5.0,ADC_Value[7]*5.0))
+            print ("light_0: %i, light_1: %i"%(ADC_Value[0],ADC_Value[1]))
+            print ("CO2_0: %i, CO2_1: %i"%(ADC_Value[2],ADC_Value[3]))
+            print ("moisture_0: %i, moisture_1: %i, moisture_2: %i, moisture_3: %i"%(ADC_Value[4],ADC_Value[5],ADC_Value[6],ADC_Value[7]))
             if (humidity22_in == 0 and temperature22_in == 0):
                 print("DHT22 inside failure")
             else:
@@ -215,14 +217,14 @@ def data_collection_and_storage():
 def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,humidity22_out):
     global light_state, waterpump_state, humidifier_state, heater_state, fan0_state, fan1_state
 
-    light_0 = int(ADC_Value[0]*5.0)
-    light_1 = int(ADC_Value[1]*5.0)
-    CO2_0 = int(ADC_Value[2]*5.0)
-    CO2_1 = int(ADC_Value[3]*5.0)
-    moisture_0 = int(ADC_Value[4]*5.0)
-    moisture_1 = int(ADC_Value[5]*5.0)
-    moisture_2 = int(ADC_Value[6]*5.0)
-    moisture_3 = int(ADC_Value[7]*5.0)
+    light_0 = int(ADC_Value[0])
+    light_1 = int(ADC_Value[1])
+    CO2_0 = int(ADC_Value[2])
+    CO2_1 = int(ADC_Value[3])
+    moisture_0 = int(ADC_Value[4])
+    moisture_1 = int(ADC_Value[5])
+    moisture_2 = int(ADC_Value[6])
+    moisture_3 = int(ADC_Value[7])
 
     # Light
     # calculate the time for sunrise and sunset
@@ -244,10 +246,12 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
         light_state = False
 
 
+    fan0_state = True
     fan1_state = True
-    heater_state = True
+    humidifier_state = True
+    Fan0.on()
     Fan1.on()
-    device_control_single(Heater,collection_frequency,30,150)
+    device_control_single(Humidifier,collection_frequency,60,120)
 
     # # Temperature
     # if temperature22 < temperature_limit_low and temperature22 != 0:

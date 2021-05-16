@@ -1,5 +1,5 @@
-# import Adafruit_DHT
-# import time
+import Adafruit_DHT
+import time
 
 # # DHT22_pin = 4
 # DHT22_pin_in = 18
@@ -53,6 +53,10 @@
 # else:
 #     print('Failed to get reading. Try again!')
 
+
+# DHT22_pin_in = 18
+# DHT22_pin_out = 4
+
 # DHT22 = Adafruit_DHT.DHT22
 # # DHT22_in = Adafruit_DHT.DHT22
 # # DHT22_out = Adafruit_DHT.DHT22
@@ -88,3 +92,33 @@
 #         else:
 #             print("DHT22 ouside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
 #     time.sleep(10)
+
+
+import ADS1256
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+ADC = ADS1256.ADS1256()
+ADC.ADS1256_init()
+
+while True:
+    try:
+        ADC_Value = ADC.ADS1256_GetAll()
+        light_0 = int(ADC_Value[0])
+        light_1 = int(ADC_Value[1])
+        CO2_0 = int(ADC_Value[2])
+        CO2_1 = int(ADC_Value[3])
+        moisture_0 = int(ADC_Value[4])
+        moisture_1 = int(ADC_Value[5])
+        moisture_2 = int(ADC_Value[6])
+        moisture_3 = int(ADC_Value[7])
+
+        print ("light_0: %i, light_1: %i"%(ADC_Value[0],ADC_Value[1]))
+        print ("CO2_0: %i, CO2_1: %i"%(ADC_Value[2],ADC_Value[3]))
+        print ("moisture_0: %i, moisture_1: %i, moisture_2: %i, moisture_3: %i"%(ADC_Value[4],ADC_Value[5],ADC_Value[6],ADC_Value[7]))
+        
+    except :
+        GPIO.cleanup()
+        print ("AD module interrupted")
+        # exit()
+    time.sleep(3)

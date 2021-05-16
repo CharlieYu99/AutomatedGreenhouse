@@ -51,12 +51,12 @@ on_time = 3
 # Humidifier.off()
 # time.sleep(3)
 
-Fan0.on()
+# Fan0.on()
 # time.sleep(on_time)
 # Fan0.off()
 # time.sleep(3)
 
-Fan1.on()
+# Fan1.on()
 # time.sleep(on_time)
 # Fan1.off()
 # time.sleep(3)
