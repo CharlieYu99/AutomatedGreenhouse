@@ -38,14 +38,14 @@ Light0_setting = ("192.168.0.104", "Reco4life")
 DHT22_pin_in = 18
 DHT22_pin_out = 4
 
-# # value limits
-light_limit_low = 2000000
-light_limit_high = 200000
-temperature_limit_low = 20
-temperature_limit_high = 28
-humidity_limit_low = 40
-humidity_limit_high = 99
-moisture_limit_low = 2000000
+# value limits
+# light_limit_low = 2000000
+# light_limit_high = 200000
+# temperature_limit_low = 20
+# temperature_limit_high = 28
+# humidity_limit_low = 40
+# humidity_limit_high = 99
+# moisture_limit_low = 2000000
 
 watering_warranty = -1
 
@@ -138,18 +138,18 @@ def data_collection_and_storage():
             print ("AD module interrupted")
             # exit()
 
+        time.sleep(2)
         # DHT22
         DHT22 = Adafruit_DHT.DHT22
         humidity22_in, temperature22_in = Adafruit_DHT.read_retry(DHT22, DHT22_pin_in)
-        
         try:
             humidity22_in = int(humidity22_in)
             temperature22_in = int(temperature22_in)
         except:
-            # print ("DHT22 read failure")
+            print ("DHT22 read failure")
             humidity22_in = 0
             temperature22_in = 0
-        
+
         time.sleep(2)
 
         humidity22_out, temperature22_out = Adafruit_DHT.read_retry(DHT22, DHT22_pin_out)
@@ -157,14 +157,14 @@ def data_collection_and_storage():
             humidity22_out = int(humidity22_out)
             temperature22_out = int(temperature22_out)
         except:
-            # print ("DHT22 read failure")
+            print ("DHT22 read failure")
             humidity22_out = 0
             temperature22_out = 0
 
-        humidity22_in = humidity22_in if humidity22_in <= 100 else 0
-        temperature22_in = humidity22_in if humidity22_in <= 100 else 0
-        humidity22_out = humidity22_in if humidity22_out <= 100 else 0
-        temperature22_out = humidity22_in if humidity22_out <= 100 else 0
+        humidity22_in = humidity22_in if humidity22_in <= 100 and humidity22_in > 0 else 0
+        temperature22_in = temperature22_in if humidity22_in <= 100 and humidity22_in > 0 else 0
+        humidity22_out = humidity22_out if humidity22_out <= 100 and humidity22_out > 0 else 0
+        temperature22_out = temperature22_out if humidity22_out <= 100 and humidity22_out > 0 else 0
 
         if print_val:
             print ("light_0: %i, light_1: %i"%(ADC_Value[0],ADC_Value[1]))
@@ -177,7 +177,7 @@ def data_collection_and_storage():
             if (humidity22_out == 0 and temperature22_out == 0):
                 print("DHT22 outside failure")
             else:
-                print("DHT22 ouside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
+                print("DHT22 outside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
         device_control(ADC_Value,humidity22_in,temperature22_in,humidity22_out,temperature22_out)
 
         # database storage
@@ -231,19 +231,8 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
     moisture_2 = int(ADC_Value[6])
     moisture_3 = int(ADC_Value[7])
 
-    dbconn=pymysql.connect(
-    host="localhost",
-    database="GreenhouseDB",
-    user="Greenhouseadmin",
-    password="adminpassword",
-    port=3306,
-    charset='utf8'
-    )
-
-    sqlcmd = "select light from user_control order by id desc"
-    df=pd.read_sql(sqlcmd,dbconn)
-    state = df.to_dict("list")["light"] == True
-
+    light_limit_low, light_limit_high, temperature_limit_low, temperature_limit_high, humidity_limit_low, humidity_limit_high, moisture_limit_low = get_device_limit()
+    
     # Light
     # calculate the time for sunrise and sunset
     ro = SunriseSunset(datetime.datetime.now(), latitude=latitude, longitude=longitude, localOffset=timezone_offset)
@@ -294,7 +283,7 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
         heater_state = False
 
     # humidity
-    if humidity22_in < 65 and humidity22_in != 0 and not humidifier_state:
+    if humidity22_in < humidity_limit_low and humidity22_in != 0 and not humidifier_state:
         humidifier_state = True
         device_control_single(Humidifier,collection_frequency,15,105)
 
@@ -339,11 +328,36 @@ def device_in_control(device):
     port=3306,
     charset='utf8'
     )
-
-    sqlcmd = "select " + device.name() + " from user_control order by id desc"
+    device_name = device.name()
+    sqlcmd = "SELECT " + device_name + " FROM GreenhouseDB.user_control where " + device_name + " is not null order by id desc;"
     df=pd.read_sql(sqlcmd,dbconn)
-    state = df.to_dict("list")[device.name()][0] == True
-    return state
+    in_control = df.to_dict("list")[device_name][0] == True
+    return in_control
+
+def get_device_limit():
+    dbconn=pymysql.connect(
+    host="localhost",
+    database="GreenhouseDB",
+    user="Greenhouseadmin",
+    password="adminpassword",
+    port=3306,
+    charset='utf8'
+    )
+
+    light_limit_low = get_device_limit_helper(dbconn,"light_limit_low")
+    light_limit_high = get_device_limit_helper(dbconn,"light_limit_high")
+    temperature_limit_low = get_device_limit_helper(dbconn,"temperature_limit_low")
+    temperature_limit_high = get_device_limit_helper(dbconn,"temperature_limit_high")
+    humidity_limit_low = get_device_limit_helper(dbconn,"humidity_limit_low")
+    humidity_limit_high = get_device_limit_helper(dbconn,"humidity_limit_high")
+    moisture_limit_low = get_device_limit_helper(dbconn,"moisture_limit_low")
+
+    return (light_limit_low, light_limit_high, temperature_limit_low, temperature_limit_high, humidity_limit_low, humidity_limit_high, moisture_limit_low)
+
+def get_device_limit_helper(dbconn,key):
+    sqlcmd = "SELECT " + key + " FROM GreenhouseDB.user_settings where " + key + " is not null order by id desc;"
+    df=pd.read_sql(sqlcmd,dbconn)
+    return df.to_dict("list")[key][0]
 
 if __name__ == '__main__':
     try:
