@@ -62,67 +62,67 @@ DHT22_pin_out = 4
 #     print('Failed to get reading. Try again!')
 
 
-DHT22_pin_in = 18
-DHT22_pin_out = 4
+# DHT22_pin_in = 18
+# DHT22_pin_out = 4
 
-DHT22 = Adafruit_DHT.DHT22
-# DHT22_in = Adafruit_DHT.DHT22
-# DHT22_out = Adafruit_DHT.DHT22
-
-while True:
-    humidity22_in, temperature22_in = Adafruit_DHT.read_retry(DHT22, DHT22_pin_in)
-    try:
-        humidity22_in = int(humidity22_in)
-        temperature22_in = int(temperature22_in)
-    except:
-        print ("DHT22 read failure")
-        humidity22_in = 0
-        temperature22_in = 0
-
-    time.sleep(2)
-
-    humidity22_out, temperature22_out = Adafruit_DHT.read_retry(DHT22, DHT22_pin_out)
-    try:
-        humidity22_out = int(humidity22_out)
-        temperature22_out = int(temperature22_out)
-    except:
-        print ("DHT22 read failure")
-        humidity22_out = 0
-        temperature22_out = 0
-
-    if True:
-        if (humidity22_in == 0 and temperature22_in == 0):
-            print("DHT22 inside failure")
-        else:
-            print("DHT22 inside: humidity = %i, temperature = %i" % (humidity22_in, temperature22_in))
-        if (humidity22_out == 0 and temperature22_out == 0):
-            print("DHT22 outside failure")
-        else:
-            print("DHT22 ouside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
-    time.sleep(10)
-
-
-
-
+# DHT22 = Adafruit_DHT.DHT22
+# # DHT22_in = Adafruit_DHT.DHT22
+# # DHT22_out = Adafruit_DHT.DHT22
 
 # while True:
+#     humidity22_in, temperature22_in = Adafruit_DHT.read_retry(DHT22, DHT22_pin_in)
 #     try:
-#         ADC_Value = ADC.ADS1256_GetAll()
-#         light_0 = int(ADC_Value[0])
-#         light_1 = int(ADC_Value[1])
-#         CO2_0 = int(ADC_Value[2])
-#         CO2_1 = int(ADC_Value[3])
-#         moisture_0 = int(ADC_Value[4])
-#         moisture_1 = int(ADC_Value[5])
-#         moisture_2 = int(ADC_Value[6])
-#         moisture_3 = int(ADC_Value[7])
+#         humidity22_in = int(humidity22_in)
+#         temperature22_in = int(temperature22_in)
+#     except:
+#         print ("DHT22 read failure")
+#         humidity22_in = 0
+#         temperature22_in = 0
 
-#         print ("light_0: %i, light_1: %i"%(ADC_Value[0],ADC_Value[1]))
-#         print ("CO2_0: %i, CO2_1: %i"%(ADC_Value[2],ADC_Value[3]))
-#         print ("moisture_0: %i, moisture_1: %i, moisture_2: %i, moisture_3: %i"%(ADC_Value[4],ADC_Value[5],ADC_Value[6],ADC_Value[7]))
+#     time.sleep(2)
+
+#     humidity22_out, temperature22_out = Adafruit_DHT.read_retry(DHT22, DHT22_pin_out)
+#     try:
+#         humidity22_out = int(humidity22_out)
+#         temperature22_out = int(temperature22_out)
+#     except:
+#         print ("DHT22 read failure")
+#         humidity22_out = 0
+#         temperature22_out = 0
+
+#     if True:
+#         if (humidity22_in == 0 and temperature22_in == 0):
+#             print("DHT22 inside failure")
+#         else:
+#             print("DHT22 inside: humidity = %i, temperature = %i" % (humidity22_in, temperature22_in))
+#         if (humidity22_out == 0 and temperature22_out == 0):
+#             print("DHT22 outside failure")
+#         else:
+#             print("DHT22 ouside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
+#     time.sleep(10)
+
+
+
+
+
+while True:
+    try:
+        ADC_Value = ADC.ADS1256_GetAll()
+        light_0 = int(ADC_Value[0])
+        light_1 = int(ADC_Value[1])
+        CO2_0 = int(ADC_Value[2])
+        CO2_1 = int(ADC_Value[3])
+        moisture_0 = int(ADC_Value[4])
+        moisture_1 = int(ADC_Value[5])
+        moisture_2 = int(ADC_Value[6])
+        moisture_3 = int(ADC_Value[7])
+
+        print ("light_0: %i, light_1: %i"%(ADC_Value[0],ADC_Value[1]))
+        print ("CO2_0: %i, CO2_1: %i"%(ADC_Value[2],ADC_Value[3]))
+        print ("moisture_0: %i, moisture_1: %i, moisture_2: %i, moisture_3: %i"%(ADC_Value[4],ADC_Value[5],ADC_Value[6],ADC_Value[7]))
         
-#     except :
-#         GPIO.cleanup()
-#         print ("AD module interrupted")
-#         # exit()
-#     time.sleep(3)
+    except :
+        GPIO.cleanup()
+        print ("AD module interrupted")
+        # exit()
+    time.sleep(5)

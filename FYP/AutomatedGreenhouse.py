@@ -178,7 +178,8 @@ def data_collection_and_storage():
                 print("DHT22 outside failure")
             else:
                 print("DHT22 outside: humidity = %i, temperature = %i" % (humidity22_out, temperature22_out))
-        device_control(ADC_Value,humidity22_in,temperature22_in,humidity22_out,temperature22_out)
+                
+        device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,humidity22_out)
 
         # database storage
         conn=pymysql.connect(host='localhost',
@@ -233,6 +234,7 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
 
     light_limit_low, light_limit_high, temperature_limit_low, temperature_limit_high, humidity_limit_low, humidity_limit_high, moisture_limit_low = get_device_limit()
     
+
     # Light
     # calculate the time for sunrise and sunset
     ro = SunriseSunset(datetime.datetime.now(), latitude=latitude, longitude=longitude, localOffset=timezone_offset)
@@ -275,12 +277,13 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
         device_control_single(Humidifier,collection_frequency,30,90)
 
     else:
-        Fan0.off()
-        Fan1.on()
         fan0_state = False
         fan1_state = True
         humidifier_state = False
         heater_state = False
+        Fan0.off()
+        Fan1.on()
+
 
     # humidity
     if humidity22_in < humidity_limit_low and humidity22_in != 0 and not humidifier_state:
@@ -290,17 +293,18 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
     # moisture
     if ((((moisture_0 + moisture_1 + moisture_2 + moisture_3) / 4) > moisture_limit_low) and watering_warranty > 24*(60*60 / collection_frequency)):
         Pump.on()
-        waterpump_state = 'ON'
+        waterpump_state = True
         time.sleep(10)
         Pump.off()
         watering_warranty = 0
     elif watering_warranty >= 72 *(60*60 / collection_frequency):
         Pump.on()
-        waterpump_state = 'ON'
+        waterpump_state = True
         time.sleep(30)
         Pump.off()
         watering_warranty = 0
     else:
+        waterpump_state = False
         watering_warranty += 1
 
 
