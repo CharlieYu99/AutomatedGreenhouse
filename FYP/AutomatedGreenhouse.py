@@ -36,7 +36,7 @@ Pump_setting = ("192.168.0.107", "Reco4life")
 Light0_setting = ("192.168.0.104", "Reco4life")
 # Light1_setting = ("192.168.0.108","Reco4life")
 DHT22_pin_in = 18
-DHT22_pin_out = 4
+DHT22_pin_out = 3
 
 # value limits
 # light_limit_low = 2000000
@@ -48,6 +48,7 @@ DHT22_pin_out = 4
 # moisture_limit_low = 2000000
 
 watering_warranty = -1
+auto_watering_time = 4 #days
 
 # collection period
 collection_frequency = 60*30
@@ -297,10 +298,10 @@ def device_control(ADC_Value,temperature22_in,humidity22_in,temperature22_out,hu
         time.sleep(10)
         Pump.off()
         watering_warranty = 0
-    elif watering_warranty >= 72 *(60*60 / collection_frequency):
+    elif watering_warranty >= auto_watering_time * 24 * (60*60 / collection_frequency):
         Pump.on()
         waterpump_state = True
-        time.sleep(30)
+        time.sleep(10)
         Pump.off()
         watering_warranty = 0
     else:
